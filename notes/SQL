@@ -1,0 +1,7 @@
+ CREATE TABLE superheroes (
+  sh_name VARCHAR2 (15)
+);   
+
+INSERT INTO superheroes VALUES ('Ironman');
+UPDATE superheroes SET SH_NAME = ‘Superman’ WHERE SH_NAME='Ironman';
+DELETE FROM superheroes WHERE sh_name = 'Superman';

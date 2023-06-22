@@ -1,0 +1,381 @@
+--Find the number of Employees working in each department 
+--Using Join
+SELECT COUNT(*) as count,d.dept_name
+FROM employee e
+INNER JOIN
+department d ON e.dept_id=d.id
+GROUP BY e.dept_id;
+
+select from employee;
+
+
+--Find the number of employees working in each department.
+--without join
+SELECT COUNT(*) as Count,d.dept_name
+FROM employee e,department d 
+WHERE e.dept_id = d.id
+GROUP BY e.dept_id;
+
+--Find the number of employees working in each department and the number of employee should be more than 5
+--Using Join
+SELECT COUNT(*) as count,d.dept_name
+FROM employee e
+INNER JOIN
+department d ON e.dept_id = d.id
+GROUP BY e.dept_id
+HAVING Count > 5;
+
+--Without Join
+SELECT COUNT(*) as count,d.dept_name
+FROM employee e,department d
+WHERE e.dept_id = d.id
+GROUP BY e.dept_id
+HAVING count > 5;
+
+/*
+Query to delete the Duplicate record from employee_info table.
+
+Query to retrieve the first four characters of Employee name from the employee_info table. 
+
+Query find number of employees whose DOB is between 01/06/1995 to 30/06/1998 and are grouped according to gender
+
+Query to fetch all the records from the employee_info table ordered by Department in
+ascending order and Salary in the descending order.
+
+Query to fetch details of all employees excluding the employees who are "HR" and "Admin" 
+ 
+Query to fetch 50% records from the employee_info table.
+
+Query to display the total salary of each employee after adding 10% increment in the Salary. 
+
+Query to retrieve two minimum and maximum salaries.
+
+Query to fetch the employee name and replace the space with '-'
+
+*/
+
+--Write a query to delete the Duplicate record from employee_info table.
+DELETE E1
+FROM employee_info E1, employee_info E2
+WHERE E1.email = E2.email
+AND E1.Id > E2.Id;
+       --or--
+DELETE E1
+FROM employee_info E1, employee_info E2
+WHERE E1.email = E2.email
+AND E1.name = E2.name
+AND E1.Id > E2.Id;
+
+
+--Write a query to delete the Duplicate record from employee_info table.
+DELETE E1
+FROM employee_info E1, employee_info E2
+WHERE E1.email = E2.email
+AND E1.Id != E2.Id;
+
+/*
+--SUBSTRING() function extracts a substring from a string
+(starting at any position).
+*/
+--Name Codeera
+SUBSTRING(name, 1,4)   --output= Code
+SUBSTRING(name, 5,3)   --output= era
+
+
+FROM employee_info E1, employee_info E2 
+WHERE E1.Id > E2.Id 
+AND E1.email = E2.email;
+select * from employee_info;
+
+
+SELECT COUNT(*), Gender
+FROM employee_info
+WHERE DOB
+BETWEEN '1995-01-01' AND '1998-06-30'
+GROUP BY Gender;
+
+--Write a query find number of employees whose DOB is between 01/06/1995 to 30/06/1998 and are grouped according to gender
+--#If we pass date in DD/MM/YYYY format
+SELECT COUNT(*), Gender FROM employee_info
+WHERE DOB
+BETWEEN
+STR_TO_DATE('01/01/1995', '%d/%m/%Y')
+AND
+STR_TO_DATE('30/06/1998', '%d/%m/%Y') 
+GROUP BY Gender;
+ 
+
+
+--STR_TO_DATE() function returns a date based on a string and a format.
+
+STR_TO_DATE ('01/01/1995', '%d/%m/%Y')           -- Output-1995-01-01
+STR_TO_DATE ('August 10 2017', '%M %d %Y')       -- Output-2017-08-10
+
+
+-- Write a query to fetch 50% records from the employee_info table.
+--#Works fine when ID is in proper sequence i.e. no record deleted
+SELECT *
+FROM employee_info
+WHERE Id <= ( SELECT COUNT(Id)/2
+              FROM employee_info );
+
+--When some records are deleted.
+SET @count = (SELECT COUNT(Id)/2 FROM employee_info); 
+PREPARE STMT FROM 'SELECT * FROM employee_info LIMIT ?';
+EXECUTE STMT USING @count;
+
+---more example
+'SELECT * FROM employee_info LIMIT 4.5';
+'SELECT * FROM employee_info LIMIT 5';
+
+--
+SELECT FLOOR(COUNT(Id)/2) FROM employee_info;   --4.5 -> 4
+SELECT CEIL(COUNT(Id)/2) FROM employee_info;    --4.5 -> 5
+
+/*
+Write a query to display the total salary of each employee after
+adding 10% increment in the Salary.
+*/
+SELECT Id,name, salary+(salary/10) as TotalSalary
+FROM employee_info;
+/*
+Salary -(salary/10)
+Salary * 5
+Salary/12
+*/
+
+SELECT DISTINCT salary
+FROM employee_info E1
+WHERE 2 >= (SELECT COUNT(DISTINCT salary FROM employee_info E2 
+            WHERE E1.salary >= E2.salary) 
+ORDER BY E1.salary;
+
+--For maximum Salary-
+SELECT DISTINCT salary
+FROM employee_info E1
+WHERE 2 >= ( SELECT COUNT(DISTINCT salary) 
+             FROM employee_info E2
+             WHERE E1.salary <= E2.salary )
+ORDER BY E1.salary DESC;
+
+
+SELECT REPLACE (name, '' ,'-' )
+FROM employee_info;
+
+
+/*
+Find the Duplicate rows in a Table
+*/
+--How To Find Duplicate Rows In a Table
+--Duplicate rows in single column
+SELECT *, COUNT(*) as duplicate
+FROM employee_info
+GROUP BY email
+HAVING duplicate>1;
+HAVING COUNT(*) >1;
+
+----Duplicate rows in multiple column
+SELECT *, COUNT(*) as duplicate
+FROM employee_info
+GROUP BY email,department
+HAVING duplicate>1;
+
+
+
+/*
+Ways to Delete Duplicate record
+
+Using GROUP BY and HAVING clause
+
+Using SELF JOIN
+
+Using Common Table Expressions (CTE) 
+
+Using RANK function
+
+**/
+
+--Using Group By and Having with IN
+DELETE FROM employee_info
+WHERE id IN (SELECT id FROM
+            (SELECT *,COUNT(*) as duplicate
+             as temp);
+FROM employee_info
+GROUP BY email 
+HAVING duplicate>1)
+
+
+--Delete Duplicate record using SELF JOIN
+DELETE E1
+FROM employee_info E1, employee_info E2
+WHERE E1.email = E2.email
+AND E1.Id > E2.Id;
+      --or--
+DELETE E1
+FROM employee_info E1, employee_info E2
+WHERE E1.email = E2.email
+AND E1.name = E2.name
+AND E1.Id > E2.Id;
+--------------------------------------------------------
+
+SELECT SUBSTRING(name, 1,4) FROM employee_info;
+
+
+SELECT
+FROM employee_info
+WHERE department
+NOT IN ('HR', 'Admin');
+
+
+SELECT
+FROM employee_info
+ORDER BY Department ASC, Salary DESC;
+
+
+
+SELECT
+FROM employee_info
+WHERE Id <= (SELECT COUNT(Id)/2 FROM employee_info );
+
+
+
+
+
+
+
+
+
+SET @count = (SELECT COUNT(Id)/2 FROM employee_info);
+PREPARE STMT FROM 'SELECT * FROM employee_info LIMIT ?';
+EXECUTE STMT USING @count;
+
+
+
+SELECT DISTINCT salary
+FROM employee_info E1
+WHERE 2 >= (SELECT COUNT(DISTINCT salary FROM employee_info E2 
+            WHERE E1.salary >= E2.salary) 
+ORDER BY E1.salary;
+
+
+SELECT DISTINCT salary
+FROM employee_info E1
+WHERE 2 >= (SELECT COUNT(DISTINCT salary FROM employee_info E2 
+             WHERE E1.salary >= E2.salary) 
+ORDER BY E1.salary;
+
+
+
+
+
+SELECT DISTINCT salary 
+FROM employee_info E1
+WHERE 2 >= (SELECT COUNT(DISTINCT salary) 
+             FROM employee_info E2 
+             WHERE E1.salary <= E2.salary) 
+ORDER BY E1.salary DESC;
+
+
+
+SELECT DISTINCT salary 
+FROM employee_info E1
+WHERE 2 >= ( SELECT COUNT(DISTINCT salary) 
+             FROM employee_info E2 WHERE E1.salary <= E2.salary ) 
+ORDER BY E1.salary DESC;
+
+
+
+--How To Find Duplicate Rows In a Table | SQL | Interview Preparation
+--Duplicate rows in single column
+SELECT *, COUNT(*) as duplicate
+FROM employee_info
+GROUP BY email;
+
+
+
+
+
+
+
+
+SELECT COUNT(*) as duplicate 
+FROM employee_info
+GROUP BY email;
+
+
+FROM employee_info
+GROUP BY email
+HAVING duplicate>1;
+
+
+
+
+
+
+SELECT *
+COUNT(*) as duplicate
+FROM employee_info
+GROUP BY email, department
+HAVING duplicate>1;
+
+
+
+--How To Delete Duplicate Rows In a Table 
+DELETE FROM employee_info
+WHERE id IN
+(SELECT id
+FROM employee_info
+GROUP BY email
+HAVING COUNT(*) >1) ;
+
+
+
+
+DELETE FROM employee_info
+WHERE id IN (SELECT id FROM employee_info GROUP BY email HAVING count(*)>1);
+--ERROR: 1093 (HY000): You can't specify target table 'employee_info' for update in FROM clause
+
+SELECT id FROM temp;
+
+
+
+
+
+
+
+
+
+nvl( , )
+nvl2( , , )
+nullif( , )
+rank()       over(order by sal desc) as col_rank
+dense_rank()  over(order by sal desc) as col_rank_dense
+
+rank() over(partition by e_no , e_name order by ROWNUM) col_rank
+
+select * from dual:
+desc dual;
+select 1+2 as result
+from dual:
+
+select e_seq.nextval
+from dual;
+select e_seq.currval
+from dual;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

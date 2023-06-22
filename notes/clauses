@@ -1,0 +1,4 @@
+v_fname students.first_name%TYPE;
+
+
+CREATE TABLE superheroes_backup AS SELECT * FROM superheroes WHERE 1=2;

@@ -1,0 +1,83 @@
+
+DML
+DDL
+System or Database Event triggers
+Instead-of Trigger
+Compound triggers
+
+CREATE [OR REPLACE] TRIGGER Ttrigger_name
+{BEFORE|AFTER} Triggering_event ON table_name
+[FOR EACH ROW]
+[FOLLOWS another_trigger_name]
+[ENABLE/DISABLE]
+[WHEN condition]
+DECLARE
+  declaration statements
+BEGIN
+  executable statements
+EXCEPTION
+  exception-handling statements
+END;
+
+--- ex-1
+CREATE OR REPLACE TRIGGER bi_Superheroes
+BEFORE INSERT ON superheroes
+FOR EACH ROW
+ENABLE
+DECLARE
+  v_user  VARCHAR2 (15);
+BEGIN
+ SELECT user INTO v_user FROM dual;
+ DBMS_OUTPUT.PUT_LINE('You Just Inserted a Row Mr.'|| v_user); 
+END;
+/
+--- ex-2
+CREATE OR REPLACE TRIGGER bu_Superheroes
+BEFORE UPDATE ON superheroes
+FOR EACH ROW
+ENABLE
+DECLARE
+  v_user  VARCHAR2 (15);
+BEGIN
+ SELECT user INTO v_user FROM dual;
+ DBMS_OUTPUT.PUT_LINE('You Just Updated a Row Mr.'|| v_user); 
+END;
+/
+--- ex-3
+CREATE OR REPLACE TRIGGER bu_Superheroes
+BEFORE DELETE ON superheroes
+FOR EACH ROW
+ENABLE
+DECLARE
+  v_user  VARCHAR2 (15);
+BEGIN
+ SELECT user INTO v_user FROM dual;
+ DBMS_OUTPUT.PUT_LINE('You Just Deleted a Row Mr.'|| v_user); 
+END;
+/
+
+--- ex-4-in-all
+CREATE OR REPLACE TRIGGER tr_superheroes
+BEFORE INSERT OR DELETE OR UPDATE ON superheroes
+FOR EACH ROW
+ENABLE
+DECLARE
+  v_user  VARCHAR2(15);
+BEGIN
+
+  SELECT 
+    user INTO v_user FROM dual;
+  IF INSERTING THEN
+    DBMS_OUTPUT.PUT_LINE('one line inserted by '||v_user);
+  ELSIF DELETING THEN
+    DBMS_OUTPUT.PUT_LINE('one line Deleted by '||v_user);
+  ELSIF UPDATING THEN
+    DBMS_OUTPUT.PUT_LINE('one line Updated by '||v_user);
+  END IF;
+END;
+/
+
+
+
+
+
